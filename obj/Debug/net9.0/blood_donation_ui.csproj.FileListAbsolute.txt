@@ -157,3 +157,4 @@ C:\Users\22203\Desktop\blood_donation_ui\obj\Debug\net9.0\blood_donation_ui.pdb
 C:\Users\22203\Desktop\blood_donation_ui\obj\Debug\net9.0\blood_donation_ui.genruntimeconfig.cache
 C:\Users\22203\Desktop\blood_donation_ui\obj\Debug\net9.0\ref\blood_donation_ui.dll
 C:\Users\22203\Desktop\blood_donation_ui\obj\Debug\net9.0\compressed\j81p60p00m-fcga88wq8d.gz
+C:\Users\22203\Desktop\blood_donation_ui\obj\Debug\net9.0\blood_donation_ui.sourcelink.json
