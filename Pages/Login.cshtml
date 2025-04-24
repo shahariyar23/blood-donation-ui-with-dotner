@@ -1,0 +1,171 @@
+@page
+@model IndexModel
+@{
+    ViewBag.Title = "Login";
+}
+
+<style>
+    .form-container {
+        background: linear-gradient(145deg, #ffffff, #f0f0f0);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        border-radius: 1rem;
+        padding: 2rem;
+        width: 100%;
+        max-width: 450px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .form-container:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .form-control {
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .btn-primary {
+        background-color: #4f46e5;
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.75rem;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #4338ca;
+    }
+
+    .form-footer a {
+        text-decoration: none;
+        color: #4f46e5;
+        font-weight: 500;
+    }
+
+    .form-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<form class="d-flex flex-column align-items-center justify-content-center mt-5" novalidate>
+    <div class="form-container">
+        <h3 class="text-center mb-4 fw-bold text-primary">Login to Your Account</h3>
+
+        <div class="mb-3">
+            <label for="validationCustom02" class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Username" id="validationCustom02"
+                required>
+            <div class="valid-feedback">Looks good!</div>
+        </div>
+
+        <div class="mb-4">
+            <label for="validationCustom03" class="form-label">Password</label>
+            <input type="password" name="password" class="form-control"
+                placeholder="Enter a strong password (min 6 characters)" id="validationCustom03" required>
+            <div class="valid-feedback">Looks good!</div>
+        </div>
+
+        <div class="mb-3">
+            <button class="btn btn-primary w-100" type="submit">Login</button>
+        </div>
+
+        <div class="form-footer text-center">
+            <p>Don't have an account? <a asp-page="Signup">Register here</a></p>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts {
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+
+
+        const form = document.querySelector("form");
+
+
+
+
+
+        // On form submit, log form data including latitude and longitude
+        form.addEventListener("submit", function (e) {
+            e.preventDefault(); // Prevent actual form submission
+
+            const formData = new FormData(form);
+            const userData = Object.fromEntries(formData.entries());
+
+            if (!Object.values(userData).some(value =>
+                value === null || value === undefined || value === "")) {
+
+                console.log(userData);
+
+                fetch("https://localhost:7034/api/Auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(userData)
+                })
+                    .then(async (res) => {
+                        const contentType = res.headers.get("content-type");
+
+                        if (!res.ok) {
+                            // If not JSON, return text (for error)
+                            const errorText = await res.text();
+                            throw new Error(errorText);
+                        }
+
+                        if (contentType && contentType.includes("application/json")) {
+                            return res.json();
+                        } else {
+                            throw new Error("Unexpected response format.");
+                        }
+                    })
+                    .then(data => {
+                        console.log(data, "data");
+
+                        if (data.statusCode === 200) {
+                            localStorage.setItem("accessToken", data.accessToken);
+                            localStorage.setItem("isLoggedIn", "true");
+                            alert(data.message);
+                            window.location.href = "/";
+                        } else {
+                            alert(data.message || "Login failed. Please try again.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Login error:", error.message);
+                        alert(error.message); // ✅ This will now show "Invalid username or password"
+                    });
+
+            } else {
+                alert("Please fill all required fields.");
+            }
+        });
+
+
+    </script>
+}

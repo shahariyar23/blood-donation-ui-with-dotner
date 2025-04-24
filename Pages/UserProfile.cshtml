@@ -1,0 +1,209 @@
+@page
+@model IndexModel
+@{
+    ViewBag.Title = "Profile";
+}
+<style>
+    .profile-card {
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+
+    .profile-img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid #4f46e5;
+    }
+
+    .profile-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .profile-header h2 {
+        font-weight: bold;
+    }
+
+    .profile-info {
+        font-size: 1rem;
+        margin-top: 1rem;
+    }
+
+    .profile-info p {
+        font-weight: 500;
+    }
+
+    .profile-info span {
+        font-weight: bold;
+        color: #4f46e5;
+    }
+
+    .button-container {
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .btn-primary {
+        background-color: #4f46e5;
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.75rem;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #4338ca;
+    }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-12">
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <img id="profileImg" class="profile-img" alt="Profile Image">
+                    <h2 id="profileName"></h2>
+                    <p class="text-muted" id="profileUsername"></p>
+                </div>
+
+                <!-- Profile Information -->
+                <div class="profile-info">
+                    <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+                    <p><strong>Gender:</strong> <span id="profileGender"></span></p>
+                    <p><strong>Religion:</strong> <span id="profileReligion"></span></p>
+                    <p><strong>Blood Type:</strong> <span id="profileBloodType"></span></p>
+                    <p><strong>Date of Birth:</strong> <span id="profileDOB"></span></p>
+                    <p><strong>Social Media:</strong> <span id="profileSocialMedia"><a href="#"
+                                target="_blank">Model.SocialMedia</a></span></p>
+                    <p><strong>Total Donations:</strong> <span id="profileTotalDonation">Model.TotalDonation</span></p>
+                    <p><strong>Last Donation:</strong> <span id="profileLastDonation">Model.LastDonation</span></p>
+
+                    <p class="mt-4">
+                        <span id="lastDonationText" class="text-muted"></span>
+                    </p>
+                </div>
+                <div class="d-flex align-items-center justify-content-between g-3">
+                    <!-- Accepted request  Button -->
+                    <div id="request" class="button-container">
+                        <button id="requestAccept" class="btn btn-primary">Accepte Request for blood</button>
+                    </div>
+
+                    <!-- logout  Button -->
+                    <div class="button-container">
+                        <button id="logout" class="btn btn-primary">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        const logoutButton = document.getElementById("logout");
+        const requestAcceptBtn = document.getElementById('requestAccept');
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("accessToken");  // Assuming you stored the token under 'accessToken'
+
+            if (token) {
+                try {
+                    // Decode the JWT token to get the payload
+                    const decodedToken = jwt_decode(token);
+
+                    // Extract username from the decoded token
+                    const username = decodedToken.Username;  // Adjust this based on how your token is structure
+                    localStorage.setItem("username", username)
+                    // Call your AI service with the extracted username
+                    callAIService(username);
+                } catch (error) {
+                    console.error("Error decoding the token:", error);
+                }
+            } else {
+                console.log("No access token found.");
+            }
+        });
+
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+
+            return date.toLocaleDateString(); // Return formatted date if valid
+        }
+
+        function callAIService(username) {
+            // Assuming you're calling an AI service with the username
+            fetch(`https://localhost:7034/api/user/doner`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('profileImg').src = data?.profileImg;
+                    document.getElementById('profileName').textContent = data.fullname;
+                    document.getElementById('profileUsername').textContent = data.username;
+                    document.getElementById('profileEmail').textContent = data.email;
+                    document.getElementById('profileGender').textContent = data.gender;
+                    document.getElementById('profileReligion').textContent = data.religion;
+                    document.getElementById('profileBloodType').textContent = data.bloodType;
+                    document.getElementById('profileDOB').textContent = formatDate(data.dateOfBirth);;
+                    document.getElementById('profileSocialMedia').innerHTML = `<a href="${data.socialMedia}" target="_blank">${data.socialMedia}</a>`;
+                    document.getElementById('profileTotalDonation').textContent = data.totalDonation;
+                    document.getElementById('profileLastDonation').textContent = formatDate(data.lastDonation);
+
+                    // Calculate days since last donation
+                    const lastDonationDate = new Date(data.lastDonation);
+                    const currentDate = new Date();
+                    const diffTime = currentDate - lastDonationDate;
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    document.getElementById('lastDonationText').textContent = `${diffDays} days ago`;
+
+                    const requestSection = document.getElementById('request');
+
+                    if (data.requestDonation === 1) {
+                        requestSection.style.display = "block";
+                        requestAcceptBtn.textContent = "Accept Request for blood";
+                    } else {
+                        requestSection.style.display = "none";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error calling AI service:", error);
+                });
+        }
+
+
+        requestAcceptBtn.addEventListener("click", function () {
+            fetch(`https://localhost:7034/api/blood/update`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: localStorage.getItem("username") })
+            })
+                .then(res => res.json())
+                .then(data => console.log(data))
+
+            // Optionally, you can redirect the user to the login page after logout
+            window.location.reload();
+        });
+
+
+        // Add event listener for logout button click
+        logoutButton.addEventListener("click", function () {
+            // Clear localStorage
+            localStorage.clear();
+
+            // Optionally, you can redirect the user to the login page after logout
+            window.location.href = '/';  // Adjust this path as necessary
+        });
+    </script>
+}

@@ -1,0 +1,90 @@
+@page
+@model IndexModel
+
+@{
+    ViewBag.Title = "Request doner";
+}
+
+<style>
+    .card {
+        border-radius: 1rem;
+    }
+</style>
+
+
+<div class="container mt-4">
+    <div id="donor-info" class="row justify-content-center">
+        <!-- Donor card will be inserted here -->
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    <script>
+        const username = localStorage.getItem('donerusername');
+        const donorInfoDiv = document.getElementById("donor-info");
+
+        fetch("https://localhost:7034/api/user/doner", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data) {
+                    donorInfoDiv.innerHTML = `
+                                <div class="col-md-6">
+                                    <div class="card shadow-lg border-0 rounded-lg">
+                                        <div class="card-header bg-success text-white text-center">
+                                            <h4 class="fw-bold mb-0">Donor Information</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <p><strong>Full Name:</strong> ${data.fullname}</p>
+                                            <p><strong>Email:</strong> ${data.email}</p>
+                                            <p><strong>Phone:</strong> ${data.phoneNumber}</p>
+                                            <p><strong>Blood Type:</strong> <span class="badge bg-danger">${data.bloodType}</span></p>
+                                            <p><strong>Last Donation:</strong> ${new Date(data.lastDonation).toLocaleDateString()}</p>
+                                        </div>
+                                        <div class="card-footer text-center">
+                                            <button id="requestBloodBtn" class="btn btn-outline-primary px-4">Request Blood</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+
+                    // ✅ Add the event listener *after* the button is added to the DOM
+                    const requestBtn = document.getElementById("requestBloodBtn");
+                    requestBtn.addEventListener("click", () => {
+                        fetch("https://localhost:7034/api/blood/request", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+
+                            },
+                            body: JSON.stringify({ username })
+                        })
+                            .then(res => res.json())
+                            .then(response => {
+                                console.log(response);
+                                alert(`✅ ${response.message || "Blood request sent successfully!"}`);
+                                localStorage.removeItem("username")
+                            })
+                            .catch(err => {
+                                console.error("Blood request error:", err);
+                                alert("❌ Failed to send blood request.");
+                            });
+                    });
+
+                } else {
+                    donorInfoDiv.innerHTML = `<div class="alert alert-warning text-center">Donor not found.</div>`;
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching donor:", err);
+                donorInfoDiv.innerHTML = `<div class="alert alert-danger text-center">Failed to load donor info.</div>`;
+            });
+
+    </script>
+}

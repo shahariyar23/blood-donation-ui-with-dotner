@@ -1,0 +1,141 @@
+﻿@page
+@model PrivacyModel
+@{
+    ViewData["Title"] = "Privacy Policy";
+}
+<style>
+    .privacy-container {
+        max-width: 900px;
+        margin: auto;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .privacy-container h5 {
+        margin-top: 1.5rem;
+        font-weight: bold;
+        border-left: 4px solid #0d6efd;
+        padding-left: 0.5rem;
+    }
+
+    .privacy-container ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .privacy-container ul li::before {
+        content: "✔️";
+        margin-right: 0.5rem;
+        color: #198754;
+    }
+
+    .privacy-highlight {
+        background-color: #f8f9fa;
+        padding: 0.75rem 1rem;
+        border-left: 4px solid #0d6efd;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-icon {
+        color: #0d6efd;
+        margin-right: 0.5rem;
+    }
+
+    .privacy-section-title {
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="privacy-container">
+    <h3 class="text-center fw-bold mb-4">Privacy Policy</h3>
+
+    <div class="mb-3">
+        Welcome to the <span class="fw-bold text-primary">IUBAT Blood Management System</span> website. Your privacy is
+        important to us,
+        and we are committed to protecting your personal information. This Privacy Policy explains how we collect, use,
+        store, and protect your information.
+    </div>
+
+    <div>
+        <div class="privacy-section-title"><i class="bi bi-shield-lock section-icon"></i> 1. Information We Collect
+        </div>
+        <div class="privacy-highlight">
+            <strong>Personal Information:</strong>
+            <ul>
+                <li>Name</li>
+                <li>Email Address</li>
+                <li>Phone Number</li>
+                <li>Blood Group</li>
+                <li>Date of Birth</li>
+                <li>Location (for nearby centers)</li>
+                <li>Donation History</li>
+            </ul>
+            <strong>Non-Personal Information:</strong>
+            <ul>
+                <li>IP Address</li>
+                <li>Browser Type and Version</li>
+                <li>Device Info</li>
+                <li>Website Usage Data</li>
+            </ul>
+        </div>
+    </div>
+
+    <h5>2. How We Use Your Information</h5>
+    <ul>
+        <li>To connect donors with recipients in emergencies.</li>
+        <li>To notify users about camps and urgent needs.</li>
+        <li>To maintain a secure donor database.</li>
+        <li>To enhance user experience.</li>
+        <li>To send updates related to blood donations.</li>
+    </ul>
+
+    <h5>3. How We Protect Your Information</h5>
+    <ul>
+        <li><strong>Encryption:</strong> Secure data storage.</li>
+        <li><strong>Access Control:</strong> Only authorized personnel access.</li>
+        <li><strong>Monitoring:</strong> We actively monitor for security breaches.</li>
+    </ul>
+    <p><em>Note: No online system is 100% secure, but we strive to keep your data safe.</em></p>
+
+    <h5>4. Sharing Your Information</h5>
+    <p class="text-info fw-semibold">We never sell or rent your personal info. But we may share with:</p>
+    <ul>
+        <li>Hospitals and blood banks (emergency purposes).</li>
+        <li>Partner NGOs or government agencies.</li>
+        <li>Legal authorities (if legally required).</li>
+    </ul>
+
+    <h5>5. Your Rights & Choices</h5>
+    <ul>
+        <li>Request a copy of your data.</li>
+        <li>Update incorrect or outdated info.</li>
+        <li>Request account deletion.</li>
+        <li>Unsubscribe from notifications.</li>
+    </ul>
+
+    <h5>6. Cookies & Tracking</h5>
+    <p>We may use cookies to:</p>
+    <ul>
+        <li>Enhance your experience.</li>
+        <li>Analyze website traffic.</li>
+        <li>Store preferences.</li>
+    </ul>
+    <p>You can disable cookies in browser settings, but some features may not work properly.</p>
+
+    <h5>7. Third-Party Links</h5>
+    <p>
+        Our website may include links to third-party sites (e.g., hospitals, social platforms).
+        Please review their privacy policies as we’re not responsible for their practices.
+    </p>
+
+    <h5>8. Policy Updates</h5>
+    <p>
+        This policy may be updated from time to time. We recommend checking this page periodically for any changes.
+    </p>
+</div>

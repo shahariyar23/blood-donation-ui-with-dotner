@@ -1,0 +1,141 @@
+@page
+@model IndexModel
+
+@{
+    ViewBag.Title = "Doners";
+}
+<style>
+    .card-img {
+        height: 100%;
+        object-fit: cover;
+        border-radius: 1rem 0 0 1rem;
+    }
+
+    .card {
+        height: 100%;
+        border-radius: 1rem;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-body p {
+        margin-bottom: 0.3rem;
+        font-size: 0.95rem;
+    }
+
+    .blood-badge {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #fff;
+        background-color: #dc3545;
+        padding: 0.2rem 0.6rem;
+        border-radius: 0.5rem;
+        display: inline-block;
+    }
+
+    @@media (max-width: 576px) {
+        .card-img {
+            border-radius: 1rem 1rem 0 0;
+        }
+    }
+</style>
+
+
+<!-- Donor Cards -->
+<div class="container overflow-hidden text-center mt-4" id="allDoners">
+    <div class="row gy-5" id="donorList">
+        @foreach (var doner in Model.Doners)
+        {
+            <div class="col-lg-4 col-md-6 col-12 donor-card">
+                <div class="card mb-3">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="https://i.ibb.co/Q7wpMrwC/2796473.jpg" class="img-fluid card-img" alt="Profile Image">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body text-start">
+                                <h5 class="card-title fw-bold">@doner?.Fullname</h5>
+                                <p><strong>Email:</strong> @doner?.Email</p>
+                                <p><strong>Phone:</strong> @doner?.PhoneNumber</p>
+                                <p><span class="blood-badge">@doner?.BloodType</span></p>
+                                <p><strong>Gender:</strong> @doner?.Gender</p>
+                                <p><strong>Religion:</strong> @doner?.Religion</p>
+                                <p><strong>Social Media:</strong> @doner?.SocialMedia</p>
+                                <p><strong>Last Donation:</strong> @doner?.LastDonation.ToString("MM/dd/yyyy")</p>
+                                <p><strong>Total Donations:</strong> @doner?.TotalDonation</p>
+
+                                <p class="mt-2">
+                                    @{
+                                        var daysSinceDonation = (DateTime.Now - doner.LastDonation).Days;
+                                        var displayDays = daysSinceDonation >= 0 ? daysSinceDonation : -daysSinceDonation;
+                                    }
+                                    <span class="text-muted">@($"{displayDays} days since last donation")</span>
+                                </p>
+
+                                @{
+                                    var daysSinceDonationAvaiable = Math.Abs((DateTime.Now - doner.LastDonation).Days);
+
+                                    if (daysSinceDonationAvaiable > 110)
+                                    {
+                                        <a href="#" class="btn px-3 rounded fw-bold btn-outline-success clickForBloodBtn"
+                                            data-donor-username="@doner?.Username">Need Blood</a>
+                                    }
+                                    else
+                                    {
+                                        var daysUntilAvailable = 110 - daysSinceDonationAvaiable;
+                                        <p class="text-danger fs-6">
+                                            After <strong>@daysUntilAvailable</strong> days this donor is available
+                                        </p>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const bloodButtons = document.querySelectorAll(".clickForBloodBtn");
+
+            bloodButtons.forEach(button => {
+                button.addEventListener("click", (e) => {
+                    e.preventDefault();
+
+                    const token = localStorage.getItem("accessToken"); // or your token key
+                    const donerUsername = button.dataset.donorUsername;
+
+
+
+                    if (token) {
+                        // ✅ User is logged in — redirect to the donor-specific request page
+                        localStorage.setItem('donerusername', donerUsername)
+                        window.location.href = `/RequestBlood`; // change this URL based on your routing
+                    } else {
+                        // ❌ Not logged in — show alert and redirect to login
+                        localStorage.removeItem('donerId');
+                        alert("Please login to request blood.");
+                        window.location.href = "/Login"; // update to your actual login URL
+                    }
+                });
+            });
+        });
+
+
+
+
+    </script>
+
+
+}

@@ -1,0 +1,222 @@
+@page
+@model IndexModel
+
+@{
+    ViewBag.Title = "Doners";
+}
+<style>
+    .card-img {
+        height: 100%;
+        object-fit: cover;
+        border-radius: 1rem 0 0 1rem;
+    }
+
+    .card {
+        height: 100%;
+        border-radius: 1rem;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-body p {
+        margin-bottom: 0.3rem;
+        font-size: 0.95rem;
+    }
+
+    .blood-badge {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #fff;
+        background-color: #dc3545;
+        padding: 0.2rem 0.6rem;
+        border-radius: 0.5rem;
+        display: inline-block;
+    }
+
+    @@media (max-width: 576px) {
+        .card-img {
+            border-radius: 1rem 1rem 0 0;
+        }
+    }
+</style>
+
+
+<!-- Search Bar -->
+<div class="container mt-4 ">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search by name, blood type..." id="searchInput">
+                <button class="btn btn-outline-primary" type="button" id="searchButton">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Display results here -->
+    <div class="container overflow-hidden text-center mt-4" id="searchResults" style="display: none;">
+        <div class="row gy-5" id="donorList">
+            <!-- JS dynamically adds cards here -->
+        </div>
+    </div>
+
+</div>
+
+
+@section Scripts {
+    <script>
+        document.getElementById("searchButton").addEventListener("click", function () {
+            const searchQuery = document.getElementById("searchInput").value.trim();
+
+            if (searchQuery !== "") {
+                // Call the API with the search query
+                fetchData(searchQuery);
+            } else {
+                alert("Please enter a search term!");
+            }
+        });
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("accessToken");  // Assuming you stored the token under 'accessToken'
+
+            if (token) {
+                try {
+                    // Decode the JWT token to get the payload
+                    const decodedToken = jwt_decode(token);
+
+                    // Extract username from the decoded token
+                    const username = decodedToken.Username;  // Adjust this based on how your token is structured
+
+                    // Call your AI service with the extracted username
+                    fetch(`https://localhost:7034/api/user/doner`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ username })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            localStorage.setItem('latitude', data.latitude)
+                            localStorage.setItem('longitude', data.longitude)
+                        })
+                } catch (error) {
+                    console.error("Error decoding the token:", error);
+                }
+            } else {
+                console.log("No access token found.");
+            }
+        });
+
+
+
+        const fetchData = (searchQuery) => {
+            const latitude = localStorage.getItem("latitude");
+            const longitude = localStorage.getItem("longitude");
+
+            fetch("https://localhost:7034/api/User/search-donor", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ bloodType: searchQuery, latitude, longitude })
+            })
+                .then(async res => {
+                    const contentType = res.headers.get("content-type");
+                    if (res.ok && contentType && contentType.includes("application/json")) {
+                        const data = await res.json();
+                        displayResults(data);
+                        searchResults.style.display = "flex";
+                    } else {
+                        const errorText = await res.text();
+                        displayResults([]); // 
+                        searchResults.style.display = "flex";
+                        console.warn("API returned non-JSON:", errorText);
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching data:", err);
+                });
+        }
+
+
+
+
+
+
+        // Function to display the results
+        function displayResults(data) {
+            const resultsContainer = document.getElementById("donorList");
+
+            resultsContainer.innerHTML = ""; // Clear previous results
+
+
+            if (data.length > 0) {
+                data.forEach(doner => {
+                    const lastDonation = new Date(doner.lastDonation);
+                    const today = new Date();
+                    const daysSinceDonation = Math.floor((today - lastDonation) / (1000 * 60 * 60 * 24));
+                    const isAvailable = daysSinceDonation > 110;
+                    const daysUntilAvailable = 110 - daysSinceDonation;
+
+                    const donorCard = document.createElement("div");
+                    donorCard.className = "col-lg-4 col-md-6 col-12 donor-card";
+                    donorCard.innerHTML = ` <div class="card mb-3">
+                                                                                                        <div class="row g-0">
+                                                                                                            <div class="col-md-4">
+                                                                                                                <img src="https://i.ibb.co/Q7wpMrwC/2796473.jpg" class="img-fluid card-img" alt="Profile Image">
+                                                                                                            </div>
+                                                                                                            <div class="col-md-8">
+                                                                                                                <div class="card-body text-start">
+                                                                                                                    <h5 class="card-title fw-bold">${doner.fullname}</h5>
+                                                                                                                    <p><strong>Email:</strong> ${doner.email}</p>
+                                                                                                                    <p><strong>Phone:</strong> ${doner.phoneNumber}</p>
+                                                                                                                    <p><span class="blood-badge">${doner.bloodType}</span></p>
+                                                                                                                    <p><strong>Gender:</strong> ${doner.gender}</p>
+                                                                                                                    <p><strong>Religion:</strong> ${doner.religion}</p>
+                                                                                                                    <p><strong>Social Media:</strong> ${doner.socialMedia}</p>
+                                                                                                                    <p><strong>Last Donation:</strong> ${lastDonation.toLocaleDateString()}</p>
+                                                                                                                    <p><strong>Total Donations:</strong> ${doner.totalDonation}</p>
+                                                                                                                    <p class="mt-2">
+                                                                                                                        <span class="text-muted">${Math.abs(daysSinceDonation)} days since last donation</span>
+                                                                                                                    </p>
+                                                                                                                    ${isAvailable
+                            ? `<a href="/RequestBlood" class="btn px-3 rounded fw-bold btn-outline-success clickForBloodBtn" data-donor-username="${doner.username}">Need Blood</a>`
+                            : `<p class="text-danger fs-6">After <strong>${daysUntilAvailable}</strong> days this donor is available</p>`
+                        }
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                `;
+                    resultsContainer.appendChild(donorCard);
+                });
+            } else {
+                resultsContainer.innerHTML = `
+                                                                                                        <div class="col-12 d-flex justify-content-center align-items-center ">
+                                                                                                    <div class="alert alert-warning text-center" role="alert">
+                                                                                                        😢 No donors found matching your search.
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            `;
+            }
+            // After appending all results (outside the if-else block)
+            document.querySelectorAll(".clickForBloodBtn").forEach(button => {
+                button.addEventListener("click", function (event) {
+                    console.log("click");
+                    const username = this.getAttribute("data-donor-username");
+                    console.log(username);
+                    localStorage.setItem("donerusername", username);
+                    console.log(`Donor ${username} saved to localStorage`);
+                });
+            });
+
+
+
+        }
+
+    </script>
+}

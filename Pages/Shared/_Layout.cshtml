@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Blood_Donation_System</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Blood_Donation_System.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        .cursor-pointer {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="shadow-sm bg-white py-3 mb-3">
+        <nav class="navbar navbar-expand-lg container">
+            <a class="navbar-brand fw-bold text-danger" asp-page="Index">
+                <i class="fa-solid fa-droplet me-2"></i>IUBAT Blood
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+                <ul class="navbar-nav gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" asp-page="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" asp-page="Doner">Donor</a>
+                    </li>
+                    <li class="nav-item"></li>
+                    <a class="nav-link fw-semibold" asp-page="searchdoner">Search Doner</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" asp-page="Bank">Blood Bank</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" asp-page="About">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" asp-page="Privacy">Privacy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" asp-page="Index">Contact Us</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex gap-3">
+                    <!-- Register Button -->
+                    <div id="registerBtn">
+                        <a asp-page="Signup" class="btn btn-outline-danger rounded-pill px-3 fw-bold">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i> Register
+                        </a>
+                    </div>
+
+                    <!-- Login Button -->
+                    <div id="loginBtn">
+                        <a asp-page="Login" class="btn btn-outline-danger rounded-pill px-3 fw-bold">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i> Login
+                        </a>
+                    </div>
+
+                    <!-- Profile Icon (Only visible when token exists) -->
+                    <div id="profileIcon">
+                        <a asp-page="userprofile"
+                            class="btn btn-danger text-white rounded-circle d-flex align-items-center justify-content-center"
+                            style="width: 42px; height: 42px; display: none;">
+                            <i class="fa-solid fa-user"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+    </header>
+
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer">
+        <div class="container py-3">
+            <div class="row g-4">
+                <!-- Find a Drive -->
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-center gap-2 text-black">
+                            <i class="fa-solid fa-magnifying-glass fs-4"></i>
+                            <span class="fs-5 fw-bold">Find a Drive</span>
+                        </div>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="#">About Us</a>
+                            <a href="#">Who We Are</a>
+                            <a href="#">Careers</a>
+                            <a href="#">Mission, Vision & Values</a>
+                            <a href="#">Leadership</a>
+                            <a href="#">Financials & Governance</a>
+                            <a href="#">Donor Bill of Rights</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-center gap-2 text-black">
+                            <i class="fa-solid fa-location-dot fs-4"></i>
+                            <span class="fs-5 fw-bold">Location</span>
+                        </div>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="#">Our Services</a>
+                            <a href="#">Find a Drive</a>
+                            <a href="#">Locations</a>
+                            <a href="#">Affiliations</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Careers -->
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-center gap-2 text-black">
+                            <i class="fa-solid fa-building fs-4"></i>
+                            <span class="fs-5 fw-bold">Careers</span>
+                        </div>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="#">Special Services</a>
+                            <a href="#">Autologous Donations</a>
+                            <a href="#">Directed Donations</a>
+                            <a href="#">Therapeutic Phlebotomies</a>
+                            <a href="#">Medical Technical Education</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Us -->
+                <div class="col-lg-3 col-md-6 col-12">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-center gap-2 text-black">
+                            <i class="fa-solid fa-address-book fs-4"></i>
+                            <span class="fs-5 fw-bold">Contact Us</span>
+                        </div>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="#">Resources</a>
+                            <a href="#">Contact Us</a>
+                            <a href="#">Blogs</a>
+                            <a href="#">Customer Care FAQs</a>
+                            <a href="#">Media</a>
+                            <a href="#">Video Hub</a>
+                            <a href="#">Media Inquiries</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media Links -->
+                <div class="col-12 text-center mt-4">
+                    <p class="fw-bold fs-4">Some Important Links</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#"><i class="fa-brands fa-facebook fs-2 text-primary"></i></a>
+                        <a href="#"><i class="fa-brands fa-youtube fs-2 text-danger"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram fs-2 text-info"></i></a>
+                        <a href="#"><i class="fa-solid fa-envelope fs-2 text-secondary"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-top text-center mt-3">
+            <p class="py-2 fs-5">© 2025 IUBAT Blood. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/44c48dbaca.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
